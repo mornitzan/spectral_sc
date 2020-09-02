@@ -31,13 +31,10 @@ num_cells = 2**10
 num_genes = 500
 
 # sample a gene expression matrix
-x=np.random.randn(num_cells,num_genes);
-
-# normalize profiles
-cur_profiles_norm = stats.zscore(x, axis=1)
+cur_profiles_ind = np.random.randn(num_cells,num_genes);
 
 # compute eigenvalues 
-cov_mat = np.cov(cur_profiles_norm)
+cov_mat = np.cov(cur_profiles_ind)
 eigenvalues = np.linalg.eig(cov_mat)[0]
 
 emp_ev = np.sort(eigenvalues)[::-1]
@@ -105,21 +102,17 @@ num_mutations = 25
 initial_profile = np.random.randint(0,2,num_genes)*2 - 1
 genes_mutated = np.random.choice(num_genes, num_mutations, replace=False)
 initial_profile[genes_mutated] = -(initial_profile[genes_mutated])
-cur_profiles = np.copy(initial_profile)
+cur_profiles_lin = np.copy(initial_profile)
 
 num_bifurcations = 10
 for k in range(num_bifurcations):
-    cur_profiles = np.vstack((cur_profiles,cur_profiles))
-    for j in range(cur_profiles.shape[0]):
+    cur_profiles_lin = np.vstack((cur_profiles_lin,cur_profiles_lin))
+    for j in range(cur_profiles_lin.shape[0]):
         genes_mutated = np.random.choice(num_genes, num_mutations, replace=False)
-        cur_profiles[j,genes_mutated] = -(cur_profiles[j,genes_mutated])
+        cur_profiles_lin[j,genes_mutated] = -(cur_profiles_lin[j,genes_mutated])
 
-
-# normalize profiles
-cur_profiles_norm = stats.zscore(cur_profiles, axis=1)
-             
 # compute eigenvalues 
-cov_mat = np.cov(cur_profiles_norm)
+cov_mat = np.cov(cur_profiles_lin)
 ev = np.real(np.linalg.eig(cov_mat)[0])
 ranked_ev = np.sort(ev)[::-1] 
 
@@ -135,7 +128,7 @@ ranked_ev_norm = ranked_ev/ranked_ev[1]
 temp_all_comp = computed_line/computed_line[1]
 
 #% corresponding MP distribution  
-num_cells = cur_profiles.shape[0]
+num_cells = cur_profiles_lin.shape[0]
 c=np.float(num_cells)/num_genes;
 a=(1-np.sqrt(c))**2;
 b=(1+np.sqrt(c))**2;
@@ -212,7 +205,7 @@ interaction_mat = np.triu(interaction_mat , k=1)
 
 num_proposed_mutations = 1000
     
-cur_profiles = np.zeros((num_cells , num_genes))
+cur_profiles_reg = np.zeros((num_cells , num_genes))
 
 for iter in range(num_cells):
     if (iter/100.).is_integer():
@@ -232,14 +225,11 @@ for iter in range(num_cells):
         if np.random.rand()<prob_acceptance:
             cur_profile = np.copy(proposed_profile)
         
-    cur_profiles[iter,:] = cur_profile
+    cur_profiles_reg[iter,:] = cur_profile
     
 
-# normalize profiles
-cur_profiles_norm = stats.zscore(cur_profiles, axis=1)
-
 # compute eigenvalues 
-cov_mat = np.cov(cur_profiles_norm)
+cov_mat = np.cov(cur_profiles_reg)
 ev = np.real(np.linalg.eig(cov_mat)[0])
 ranked_ev = np.sort(ev)[::-1] 
             
