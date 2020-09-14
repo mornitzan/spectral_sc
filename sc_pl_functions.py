@@ -16,6 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 from sklearn.neighbors import NearestNeighbors
+import zipfile
 
 #############
 # functions #
@@ -89,8 +90,10 @@ def plot_ev_vs_rank_mult(ranked_ev_rand, ranked_ev_nei, dataset_name):
 
 def getdata(dat_name):
     if dat_name == 'epidermis':
-        file_name = 'spectral_sc/datasets/GSE67602_Joost_et_al_expression.txt'
-        temp = np.loadtxt(file_name,dtype='str')    
+        file_name = 'datasets/epidermis_data.zip'
+        with zipfile.ZipFile(file_name, 'r') as zip_ref:
+            zip_ref.extractall('../datasets')
+        temp = np.loadtxt('datasets/GSE67602_Joost_et_al_expression.txt',dtype='str')    
         dge_full = temp[1:,:]; dge_full = dge_full[:,1:]
         dge_full = dge_full.T.astype(float)
         gene_names = temp[:,0]; gene_names = gene_names[1:]
